@@ -54,6 +54,60 @@ app.post('/product', async (req, res) => {
  
 
 
+ // Route for fetching all products
+app.get('/products', async (req, res) => {
+    try {
+      const products = await Product.find(); // Fetch all products from the database
+      res.status(200).json(products);
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+// Route for fetching a single product by ID
+app.get('/products/:id', async (req, res) => {
+    try {
+      const product = await Product.findById(req.params.id); // Fetch product by ID from the database
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      res.status(200).json(product);
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Route for updating a product by ID
+app.put('/products/:id', async (req, res) => {
+    try {
+      const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true }); // Update product by ID in the database
+      if (!updatedProduct) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      res.status(200).json(updatedProduct);
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Route for deleting a product by ID
+app.delete('/products/:id', async (req, res) => {
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(req.params.id); // Delete product by ID from the database
+      if (!deletedProduct) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+
 mongoose.set("strictQuery",false )
 mongoose.
 connect('mongodb+srv://admin:root@restfulcrudapi2023.ssjrzth.mongodb.net/Node-API?retryWrites=true&w=majority')
