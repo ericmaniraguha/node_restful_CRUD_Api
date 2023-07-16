@@ -19,20 +19,39 @@ app.get('/blog',(req, res) =>{
 })
 
 
-//route for saving data into the rdbsm
-app.post('/product', async(req, res) =>{
-   try{
+// //route for saving data into the rdbsm
+// app.post('/product', async(req, res) =>{
+//    try{
 
-    //as we want to save data into the rdbsm we use await
-    const product = await Product.create(req.body)
-    res.status(200).json(product)
+//     //as we want to save data into the rdbsm we use await
+//     const product = await Product.create(req.body)
+//     res.status(200).json(product)
 
-   }catch(error){
-    console.log(error.message);
-    res.status(500).json({message:error.message})
-   }
-})
+//    }catch(error){
+//     console.log(error.message);
+//     res.status(500).json({message:error.message})
+//    }
+// })
 
+//To modify the route for saving data into the database to handle multiple JSON products and store them in an array.
+app.post('/product', async (req, res) => {
+    try {
+       const products = req.body; // Assuming the request body contains an array of products
+       
+       // Use the map() function to iterate through each product in the array
+       const savedProducts = await Promise.all(products.map(async (product) => {
+          const savedProduct = await Product.create(product); // Save each product in the database
+          return savedProduct;
+       }));
+ 
+       res.status(200).json(savedProducts); // Return the saved products as a response
+ 
+    } catch (error) {
+       console.log(error.message);
+       res.status(500).json({ message: error.message });
+    }
+ });
+ 
 
 
 mongoose.set("strictQuery",false )
